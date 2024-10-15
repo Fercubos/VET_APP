@@ -40,7 +40,7 @@ import Navigation from './Navigation';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBJ2T1esPltnGM6Mk5lU8Dphi2lOGVBJ2Q",
+
   authDomain: "vetapp-e0d30.firebaseapp.com",
   projectId: "vetapp-e0d30",
   storageBucket: "vetapp-e0d30.appspot.com",
