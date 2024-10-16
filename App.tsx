@@ -1,9 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+
 import {
   initializeAuth,
   getAuth,
@@ -11,9 +15,10 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   UserCredential,
-  getReactNativePersistence
+  // getReactNativePersistence
 } from 'firebase/auth';
 
+// import { getReactNativePersistence } from 'firebase/auth/react-native';
 
 import {
   getFirestore,
@@ -40,7 +45,7 @@ import Navigation from './Navigation';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-
+  apiKey: "AIzaSyBJ2T1esPltnGM6Mk5lU8Dphi2lOGVBJ2Q",
   authDomain: "vetapp-e0d30.firebaseapp.com",
   projectId: "vetapp-e0d30",
   storageBucket: "vetapp-e0d30.appspot.com",
@@ -50,13 +55,13 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const auth = initializeAuth(
-  app,
-  {persistence: getReactNativePersistence(ReactNativeAsyncStorage)}
-);
+
+// const auth = initializeAuth(app, {
+//   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+// });
 
 
 export default function AppNavigation() {
@@ -64,6 +69,9 @@ export default function AppNavigation() {
     <Navigation/>
   );
 } 
+
+const Stack = createNativeStackNavigator();
+
 export function App() {
 
   const[email, setEmail] = useState("");
@@ -74,14 +82,16 @@ export function App() {
   //target - get image URL from firebase to display it in the app
   //OPt 1 : use a simple route from bucket
 
-  var puppyRef = ref(storage, "puppy.jpg");
-
-  getDownloadURL(puppyRef).then((url) => {
-    console.log("URL: " + url);
-    setImageURL(url);
-  }).catch((error) => {
-    console.log("ERROR: " + error);
-  });
+  useEffect(() => {
+    var puppyRef = ref(storage, "puppy.jpg");
+    
+    getDownloadURL(puppyRef).then((url) => {
+      console.log("URL: " + url);
+      setImageURL(url);
+    }).catch((error) => {
+      console.log("ERROR: " + error);
+    });
+  }, []); 
 
   onAuthStateChanged(auth, user => {
     if(user) {
@@ -93,7 +103,7 @@ export function App() {
 
   return (
     <View style={styles.container}>
-      <text>Hi from App</text>
+      <Text>Hi from App</Text>
       <StatusBar style="auto" />
       <TextInput
         placeholder='email'
@@ -221,6 +231,7 @@ export function App() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
