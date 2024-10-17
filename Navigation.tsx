@@ -6,7 +6,7 @@
 
 // Importaciones de Expo y React Native
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Image, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Image, Alert, FlatList, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 
 // Firebase Core y Servicios
@@ -32,16 +32,22 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import Navigation from './Navigation';
 
 // Configuración de Firebase (usa variables de entorno en producción)
+// Import the functions you need from the SDKs you need
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBJ2T1esPltnGM6Mk5lU8Dphi2lOGVBJ2Q',
-  authDomain: 'vetapp-e0d30.firebaseapp.com',
-  projectId: 'vetapp-e0d30',
-  storageBucket: 'vetapp-e0d30.appspot.com',
-  messagingSenderId: '740226333197',
-  appId: '1:740226333197:web:8add2cd237d4d36479b344',
+  apiKey: "AIzaSyBJ2T1esPltnGM6Mk5lU8Dphi2lOGVBJ2Q",
+  authDomain: "vetapp-e0d30.firebaseapp.com",
+  projectId: "vetapp-e0d30",
+  storageBucket: "vetapp-e0d30.appspot.com",
+  messagingSenderId: "740226333197",
+  appId: "1:740226333197:web:8add2cd237d4d36479b344"
 };
 
-// Inicializar Firebase y servicios
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -49,6 +55,14 @@ const storage = getStorage(app);
 
 
 const Stack = createNativeStackNavigator();
+
+interface Animal {
+  id: string;
+  name: string;
+  // Puedes agregar más propiedades si existen, por ejemplo:
+  // age: number;
+  // imageUrl: string;
+}
 
 export default function Navigation() {
     return(
@@ -122,19 +136,93 @@ function Home({ navigation }: any) {
     );
   }
   
-function Main_menu  ( {navigation}: any){
-    return(
-        <View>
-            <Text> Main_menu </Text>
-            <Button
-                title = "Main_menu"
-                onPress={() => {
-                    navigation.navigate("Main_menu");
-                }}
-            />
-        </View>
+
+  function Main_menu({ navigation }: any) {
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
+    const [imageURL, setImageURL] = useState('');
+  
+    // Función para agregar un nuevo animal
+    const addAnimal = async () => {
+      try {
+        const animalsCollection = collection(db, 'animals');
+  
+        const newAnimalDoc = await addDoc(animalsCollection, {
+          name: name,
+          age: age,
+          imageURL: imageURL,
+        });
+  
+        console.log('New animal added with ID: ', newAnimalDoc.id);
+        Alert.alert('Success', 'Animal added successfully!');
+      } catch (e) {
+        console.log('Error adding animal: ', e);
+        Alert.alert('Error', 'Failed to add animal: ' + (e as Error).message);
+      }
+    };
+  
+    // Función para obtener todos los animales
+    const getAllAnimals = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'animals'));
+        snapshot.forEach((doc) => {
+          console.log(doc.id, ' => ', doc.data());
+        });
+      } catch (e) {
+        console.log('Error fetching animals: ', e);
+        Alert.alert('Error', 'Failed to fetch animals: ' + (e as Error).message);
+      }
+    };
+  
+    // Función para realizar una consulta por nombre
+    const queryAnimals = async () => {
+      try {
+        const animalsRef = collection(db, 'animals');
+        const q = query(animalsRef, where('name', '==', 'pug')); // Ejemplo de consulta por nombre
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id, ' => ', doc.data());
+        });
+      } catch (e) {
+        console.log('Error querying animals: ', e);
+        Alert.alert('Error', 'Failed to query animals: ' + (e as Error).message);
+      }
+    };
+  
+    return (
+      <View>
+        <TextInput
+          placeholder="Name"
+          onChangeText={(text) => setName(text)}
+          value={name}
+        />
+        <TextInput
+          placeholder="Age"
+          onChangeText={(text) => setAge(text)}
+          value={age}
+        />
+        <TextInput
+          placeholder="Image URL"
+          onChangeText={(text) => setImageURL(text)}
+          value={imageURL}
+        />
+        <Button title="Add Animal" onPress={addAnimal} />
+  
+        <Button title="Get All Animals" onPress={getAllAnimals} />
+  
+        <Button title="Query by Name" onPress={queryAnimals} />
+  
+        {imageURL !== '' ? (
+          <Image
+            source={{ uri: imageURL }}
+            style={{ width: 200, height: 200 }}
+          />
+        ) : (
+          <Text>Loading image...</Text>
+        )}
+      </View>
     );
-}
+  }
 
 
 function Sign_in({ navigation }: any) {

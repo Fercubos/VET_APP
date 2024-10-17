@@ -154,81 +154,81 @@ export function App() {
           auth.signOut();
         }}
       />
-      <TextInput
-        placeholder='name'
-        onChangeText={text => {
-          setName(text);
-        }}
-      />
-      <TextInput
-        placeholder='breed'
-        onChangeText={text => {
-          setBreed(text);
-        }}
-      />
-      <Button 
-        title="add"
-        onPress={async () =>{
+        <TextInput
+          placeholder='name'
+          onChangeText={text => {
+            setName(text);
+          }}
+        />
+        <TextInput
+          placeholder='breed'
+          onChangeText={text => {
+            setBreed(text);
+          }}
+        />
+        <Button 
+          title="add"
+          onPress={async () =>{
 
-          try {
+            try {
 
-            // try code block
-            // code that might be risky can be run within a try code block
-            // risky means that it can raise an exception
-            // intention is to deal with exceptions gracefully
-            // (fail gracefully)
-            // https://en.wikipedia.org/wiki/Graceful_exit
+              // try code block
+              // code that might be risky can be run within a try code block
+              // risky means that it can raise an exception
+              // intention is to deal with exceptions gracefully
+              // (fail gracefully)
+              // https://en.wikipedia.org/wiki/Graceful_exit
 
-            // how is data arranged in firestore?
-            // collection - is a set of documents
-            // can think of it as a "table" in relational db
-            // documents - think of them as rows in a table
+              // how is data arranged in firestore?
+              // collection - is a set of documents
+              // can think of it as a "table" in relational db
+              // documents - think of them as rows in a table
 
-            // get a reference to the collection
-            var perritosCollection = collection(db, "perritos");
+              // get a reference to the collection
+              var perritosCollection = collection(db, "perritos");
 
-            const newDoc = await addDoc(
-              perritosCollection,
-              {
-                name: name,
-                breed: breed
-              }
-            );
+              const newDoc = await addDoc(
+                perritosCollection,
+                {
+                  name: name,
+                  breed: breed
+                }
+              );
 
-            console.log("ID of the new perrito: " + newDoc.id);
+              console.log("ID of the new perrito: " + newDoc.id);
 
-          }catch(e){
-            console.log("EXCEPTION WHEN TRYING TO ADD AN ANIMAL: " + e);
-          }
-        }}
-      />
-      <Button 
-        title="get all"
-        onPress={async () => {
-          var snapshot = await getDocs(collection(db, "perritos"));
-          snapshot.forEach(currentDocument => {
-            console.log(currentDocument.data());
-          });
-        }}
-      />
-      <Button 
-        title="query"
-        onPress={async () =>{
-          const perritos = collection(db, "perritos");
-          const q = query(perritos, where("breed", "==", "pug"));
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
-          });
-        }}
-      />
-      imageURL != "" ? 
-      <Image source={{uri: imageURL}} 
-      style={{width: 200, height: 200}}
-      /> 
-      :
-      <Text>Loading image ...</Text>
-    </View>
+            }catch(e){
+              console.log("EXCEPTION WHEN TRYING TO ADD AN ANIMAL: " + e);
+            }
+          }}
+        />
+        <Button 
+          title="get all"
+          onPress={async () => {
+            var snapshot = await getDocs(collection(db, "perritos"));
+            snapshot.forEach(currentDocument => {
+              console.log(currentDocument.data());
+            });
+          }}
+        />
+        <Button 
+          title="query"
+          onPress={async () =>{
+            const perritos = collection(db, "perritos");
+            const q = query(perritos, where("breed", "==", "pug"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, " => ", doc.data());
+            });
+          }}
+        />
+        imageURL != "" ? 
+        <Image source={{uri: imageURL}} 
+        style={{width: 200, height: 200}}
+        /> 
+        :
+        <Text>Loading image ...</Text>
+      </View>
   );
 }
 
